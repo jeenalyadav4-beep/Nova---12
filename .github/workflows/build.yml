@@ -1,0 +1,27 @@
+name: Build Nova 12 ISO
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Compilers
+        run: sudo apt-get update && sudo apt-get install -y nasm genisoimage
+
+      - name: Compile Graphical Kernel
+        run: nasm -f bin desktop_kernel.asm -o nova12.bin
+
+      - name: Create Bootable ISO File
+        run: |
+          mkdir -p iso/boot
+          cp nova12.bin iso/boot/
+          genisoimage -R -b boot/nova12.bin -no-emul-boot -boot-load-size 4 -boot-info-table -o Nova12.iso iso
+
+      - name: Upload Finished ISO for Users
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nova12-Bootable-ISO
+          path: Nova12.iso
