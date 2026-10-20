@@ -14,11 +14,14 @@ jobs:
       - name: Compile Graphical Kernel
         run: nasm -f bin desktop_kernel.asm -o nova12.bin
 
+      - name: Pad File for CD Format
+        run: truncate -s 1440k nova12.bin
+
       - name: Create Bootable ISO File
         run: |
-          mkdir -p iso/boot
-          cp nova12.bin iso/boot/
-          genisoimage -R -b boot/nova12.bin -no-emul-boot -boot-load-size 4 -boot-info-table -o Nova12.iso iso
+          mkdir -p iso
+          cp nova12.bin iso/
+          genisoimage -R -b nova12.bin -no-emul-boot -boot-load-size 4 -o Nova12.iso iso
 
       - name: Upload Finished ISO for Users
         uses: actions/upload-artifact@v4
